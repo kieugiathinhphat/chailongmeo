@@ -306,30 +306,34 @@ function handleBrushMovement(p, dt) {
 
   if (inputLockedUntilRelease) {
     document.body.classList.remove("brushing");
-    hintEl.textContent = "Thả chuột rồi chải tiếp";
+    hintEl.textContent = "Th? chu?t r?i ch?i ti?p";
     return;
   }
 
-  const onCat = isOnBrushZone(p.x, p.y);
-  document.body.classList.toggle("brushing", pointerDown && onCat && state !== S.STARE);
-
-  if (!pointerDown || !lastPoint) return;
+  if (!pointerDown || !lastPoint) {
+    document.body.classList.remove("brushing");
+    return;
+  }
 
   const dx = p.x - lastPoint.x;
   const dy = p.y - lastPoint.y;
   const dist = Math.hypot(dx, dy);
-
-  if (!onCat) return;
-
   const now = performance.now();
 
+  // Important:
+  // During STARE, the normal cat image is hidden, so the brush zone can be invalid.
+  // The player loses if they keep moving while holding the mouse/finger.
   if (state === S.STARE) {
-    if (now - stareStartedAt > 230 && dist > 2.0) {
+    if (now - stareStartedAt > 230 && dist > 4.0) {
       setState(S.ATTACK);
     }
     return;
   }
 
+  const onCat = isOnBrushZone(p.x, p.y);
+  document.body.classList.toggle("brushing", onCat);
+
+  if (!onCat) return;
   if (state !== S.CALM) return;
 
   brushProgress += dist;
