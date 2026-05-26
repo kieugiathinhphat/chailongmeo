@@ -167,8 +167,9 @@ function setState(next) {
     hintEl.textContent = "DỪNG LẠI!";
     document.body.classList.add("stare");
 
+    // Mobile fix: use the full-cat stare image as a replacement sprite.
     catNormal.classList.add("hidden");
-    catBody.classList.remove("hidden");
+    catBody.classList.add("hidden");
     catHeadStare.classList.remove("hidden");
     catHeadLose.classList.add("hidden");
 
@@ -182,7 +183,7 @@ function setState(next) {
     document.body.classList.add("attack");
 
     catNormal.classList.add("hidden");
-    catBody.classList.remove("hidden");
+    catBody.classList.add("hidden");
     catHeadStare.classList.add("hidden");
     catHeadLose.classList.remove("hidden");
 
@@ -274,8 +275,29 @@ function rectContains(rect, x, y) {
   return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
 }
 
+function getBrushRect() {
+  // Compute brush zone from the actual rendered cat size.
+  // This works better than hard-coded CSS percentages on mobile.
+  const r = catNormal.getBoundingClientRect();
+
+  return {
+    left: r.left + r.width * 0.08,
+    right: r.left + r.width * 0.62,
+    top: r.top + r.height * 0.36,
+    bottom: r.top + r.height * 0.78,
+  };
+}
+
+function updateDebugBrushZone() {
+  const r = getBrushRect();
+  brushZone.style.left = `${r.left}px`;
+  brushZone.style.top = `${r.top}px`;
+  brushZone.style.width = `${r.right - r.left}px`;
+  brushZone.style.height = `${r.bottom - r.top}px`;
+}
+
 function isOnBrushZone(x, y) {
-  const r = brushZone.getBoundingClientRect();
+  const r = getBrushRect();
   return rectContains(r, x, y);
 }
 
@@ -386,4 +408,10 @@ soundBtn.addEventListener("click", (e) => {
 window.addEventListener("load", () => {
   applyMute();
   moveComb(window.innerWidth * 0.58, window.innerHeight * 0.64);
+  updateDebugBrushZone();
+});
+
+window.addEventListener("resize", updateDebugBrushZone);
+window.addEventListener("orientationchange", () => {
+  setTimeout(updateDebugBrushZone, 250);
 });

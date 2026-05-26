@@ -3,8 +3,10 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
+html,
+body {
   margin: 0;
+  width: 100%;
   height: 100%;
   overflow: hidden;
   background: #f5f5f5;
@@ -33,6 +35,7 @@ button:active {
 .screen {
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
 }
 
 .hidden {
@@ -67,7 +70,7 @@ button:active {
 
 #hud {
   position: fixed;
-  top: 14px;
+  top: max(12px, env(safe-area-inset-top));
   left: 20px;
   right: 20px;
   z-index: 70;
@@ -86,13 +89,14 @@ button:active {
 }
 
 #scoreBox {
-  font-size: clamp(24px, 2.7vw, 38px);
+  font-size: clamp(22px, 2.7vw, 38px);
+  white-space: nowrap;
 }
 
 #hint {
   max-width: min(58vw, 820px);
   text-align: right;
-  font-size: clamp(26px, 3.2vw, 48px);
+  font-size: clamp(22px, 3vw, 44px);
   line-height: 1.05;
   opacity: 0.72;
 }
@@ -100,7 +104,7 @@ button:active {
 #soundBtn {
   position: fixed !important;
   right: 18px !important;
-  bottom: 18px !important;
+  bottom: max(18px, env(safe-area-inset-bottom)) !important;
   left: auto !important;
   top: auto !important;
   z-index: 160 !important;
@@ -128,20 +132,23 @@ button:active {
 }
 
 #stage {
-  position: relative;
-  width: min(100vw, 900px);
+  position: fixed;
+  inset: 0;
+  width: 100vw;
   height: 100vh;
-  margin: 0 auto;
-  overflow: visible;
+  height: 100dvh;
+  margin: 0;
+  overflow: hidden;
   touch-action: none;
 }
 
 #catLayer {
   position: absolute;
   left: 50%;
-  bottom: 54px;
-  width: min(86vw, 560px);
-  height: min(72vh, 660px);
+  bottom: 48px;
+  width: min(72vw, 560px);
+  height: min(70vh, 660px);
+  height: min(70dvh, 660px);
   transform: translateX(-50%);
 }
 
@@ -151,36 +158,31 @@ button:active {
   bottom: 0;
   max-width: 100%;
   max-height: 100%;
+  height: 100%;
+  width: auto;
   transform: translateX(-50%);
+  object-fit: contain;
   pointer-events: none;
   filter: drop-shadow(0 18px 18px rgba(0,0,0,0.08));
 }
 
-.cat.normal,
-.cat.body {
+/* cat_head_stare.png is a full-cat image, not a transparent head.
+   So we display it as a full replacement sprite instead of layering it over the body. */
+.stare-img {
   height: 100%;
+  width: auto;
 }
 
-.cat-head {
-  position: absolute;
-  z-index: 4;
-  width: 58%;
-  left: 54%;
-  top: 2%;
-  transform: translate(-50%, 0) rotate(-2deg);
-  pointer-events: none;
-  filter: drop-shadow(0 10px 12px rgba(0,0,0,0.12));
-}
-
-.cat-head.lose {
-  width: 62%;
-  top: -1%;
+/* This asset can stay unused for now; it is kept only for future experiments. */
+.body {
+  height: 100%;
+  width: auto;
 }
 
 #comb {
   position: fixed;
   z-index: 80;
-  width: 120px;
+  width: 112px;
   left: 54vw;
   top: 62vh;
   transform: translate(-50%, -50%) rotate(-28deg);
@@ -190,14 +192,11 @@ button:active {
 }
 
 #brushZone {
-  position: absolute;
+  position: fixed;
   z-index: 2;
-  left: 18%;
-  top: 38%;
-  width: 42%;
-  height: 34%;
-  border-radius: 50%;
+  border-radius: 999px;
   pointer-events: none;
+  opacity: 0;
 }
 
 #darkOverlay {
@@ -255,8 +254,8 @@ button:active {
   animation: tinyShake 0.11s infinite;
 }
 
-.stare #catHeadStare {
-  animation: starePop 0.22s ease-out both;
+.stare #catLayer {
+  animation: starePopWholeCat 0.22s ease-out both;
 }
 
 .attack #stage {
@@ -271,6 +270,7 @@ button:active {
   top: 50%;
   width: 230vw;
   max-width: none;
+  height: auto;
   transform: translate(-50%, -50%) rotate(1deg);
 }
 
@@ -296,10 +296,10 @@ button:active {
   50% { transform: translateX(-50%) rotate(-0.8deg); }
 }
 
-@keyframes starePop {
-  0% { transform: translate(-50%, 0) scale(0.35) rotate(-8deg); opacity: 0; }
-  70% { transform: translate(-50%, 0) scale(1.08) rotate(-2deg); opacity: 1; }
-  100% { transform: translate(-50%, 0) scale(1) rotate(-2deg); opacity: 1; }
+@keyframes starePopWholeCat {
+  0% { transform: translateX(-50%) scale(0.94) rotate(-2deg); opacity: 0.2; }
+  70% { transform: translateX(-50%) scale(1.04) rotate(1deg); opacity: 1; }
+  100% { transform: translateX(-50%) scale(1) rotate(0deg); opacity: 1; }
 }
 
 @keyframes screenShake {
@@ -348,38 +348,61 @@ button:active {
   }
 }
 
-@media (max-width: 520px) {
-  #catLayer {
-    width: 96vw;
-    bottom: 72px;
-  }
-
-  #comb {
-    width: 98px;
-  }
-
+@media (max-width: 560px) {
   #hud {
-    top: 10px;
-    left: 12px;
-    right: 12px;
-  }
-
-  #hint {
-    font-size: clamp(20px, 6vw, 34px);
-    max-width: 62vw;
+    top: max(10px, env(safe-area-inset-top));
+    left: 14px;
+    right: 14px;
+    gap: 10px;
   }
 
   #scoreBox {
-    font-size: clamp(18px, 5.5vw, 30px);
+    font-size: clamp(20px, 6.2vw, 28px);
+  }
+
+  #hint {
+    font-size: clamp(18px, 5.7vw, 27px);
+    max-width: 56vw;
+  }
+
+  #catLayer {
+    width: 92vw;
+    height: 67vh;
+    height: 67dvh;
+    bottom: max(64px, env(safe-area-inset-bottom));
+  }
+
+  #comb {
+    width: 86px;
   }
 
   #soundBtn {
     right: 12px !important;
-    bottom: 12px !important;
+    bottom: max(14px, env(safe-area-inset-bottom)) !important;
     width: 50px !important;
     height: 50px !important;
     min-width: 50px !important;
     min-height: 50px !important;
     font-size: 23px !important;
+  }
+
+  #youDied {
+    font-size: clamp(52px, 15vw, 86px);
+  }
+
+  #deathSubtitle {
+    font-size: clamp(18px, 5vw, 28px);
+  }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  #catLayer {
+    width: min(52vw, 520px);
+    height: 72dvh;
+    bottom: 20px;
+  }
+
+  #hint {
+    font-size: clamp(18px, 4vh, 28px);
   }
 }
