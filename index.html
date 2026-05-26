@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Chải Lông Mèo</title>
+  <link rel="stylesheet" href="style.css?v=6" />
+</head>
+<body>
+  <main id="game">
+    <section id="startScreen" class="screen">
+      <h1>Chải Lông Mèo</h1>
+      <p>Chải nhẹ thôi. Nó nhìn lại thì dừng tay.</p>
+      <button id="playBtn" type="button">PLAY</button>
+    </section>
+
+    <section id="gameScreen" class="screen hidden">
+      <div id="hud">
+        <div id="scoreBox">Score: <span id="score">0</span></div>
+        <div id="hint">Kéo lược lên lưng mèo</div>
+      </div>
+
+      <button id="soundBtn" aria-label="Turn sound off" type="button">🔊</button>
+
+      <div id="stage">
+        <div id="catLayer">
+          <img id="catNormal" class="cat normal" src="assets/images/img1.jfif" draggable="false" alt="cat normal" />
+          <img id="catBody" class="cat body hidden" src="assets/images/cat_body.png" draggable="false" alt="cat body" />
+          <img id="catHeadStare" class="cat-head hidden" src="assets/images/cat_head_stare.png" draggable="false" alt="cat stare" />
+          <img id="catHeadLose" class="cat-head lose hidden" src="assets/images/cat_head_lose.png" draggable="false" alt="cat lose" />
+        </div>
+
+        <div id="brushZone"></div>
+      </div>
+
+      <div id="darkOverlay"></div>
+
+      <div id="deathText" class="hidden">
+        <div id="youDied">YOU DIED</div>
+        <div id="deathSubtitle">Bạn đã bị con mèo</div>
+      </div>
+
+      <img id="comb" src="assets/images/comb.svg" draggable="false" alt="comb" />
+      <button id="restartBtn" class="hidden" type="button">Restart</button>
+    </section>
+  </main>
+
+  <script src="main.js?v=6"></script>
+</body>
+</html>
