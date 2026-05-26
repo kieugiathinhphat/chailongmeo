@@ -125,6 +125,22 @@ function flashScreen() {
   }, 320);
 }
 
+function attackFlashV13() {
+  darkOverlay.style.transition = "none";
+  darkOverlay.style.background = "white";
+  darkOverlay.style.opacity = "0.96";
+
+  setTimeout(() => {
+    darkOverlay.style.opacity = "0";
+  }, 55);
+
+  setTimeout(() => {
+    darkOverlay.style.background = "black";
+    darkOverlay.style.transition = "opacity 280ms ease";
+    darkOverlay.style.opacity = "0.18";
+  }, 130);
+}
+
 function clearStareTimer() {
   if (stareReturnTimer !== null) {
     clearTimeout(stareReturnTimer);
@@ -202,7 +218,7 @@ function setState(next) {
     flashScreen();
     playSound(audio.attackMeow);
     playSound(audio.whoosh);
-    setTimeout(gameOver, 620);
+    setTimeout(gameOver, 720);
   }
 
   if (next === S.GAME_OVER) {
