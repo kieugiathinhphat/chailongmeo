@@ -509,170 +509,165 @@ button:active {
   }
 }
 
+/* v12: restore the earlier death feel, but keep catHeadLose outside catLayer. */
 
-/* v10: restore attack flash and snappier death animation */
-#flashOverlay {
+#darkOverlay {
   position: fixed;
   inset: 0;
-  z-index: 125;
-  background: white;
+  z-index: 90;
+  background: black;
   opacity: 0;
   pointer-events: none;
+  transition: opacity 280ms ease;
 }
 
-#flashOverlay.flash-now {
-  animation: attackFlashV10 0.28s ease-out forwards;
+#deathText {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 14px;
+  pointer-events: none;
+  text-align: center;
 }
 
-@keyframes attackFlashV10 {
-  0% { opacity: 0; }
-  8% { opacity: 1; }
-  18% { opacity: 0.12; }
-  36% { opacity: 0.92; }
-  100% { opacity: 0; }
+#youDied {
+  color: #b10000;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(54px, 16vw, 142px);
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-shadow: 0 4px 0 #000, 0 0 24px rgba(255,0,0,0.5);
+}
+
+#deathSubtitle {
+  color: #eeeeee;
+  font-size: clamp(18px, 3.2vw, 38px);
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-shadow: 0 3px 0 #000, 0 0 18px rgba(0,0,0,0.8);
+  opacity: 0;
+  transform: translateY(-8px);
+  animation: subtitleAppear 0.35s ease-out 0.45s forwards;
+}
+
+.attack #stage {
+  animation: screenShake 0.055s infinite !important;
+}
+
+#catHeadLose {
+  position: fixed !important;
+  z-index: 105 !important;
+  left: 54%;
+  top: 30%;
+  width: min(46vw, 430px);
+  height: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+  transform: translate(-50%, -50%) scale(0.8) rotate(-7deg);
+  pointer-events: none;
+  filter: drop-shadow(0 18px 22px rgba(0,0,0,0.35));
 }
 
 .attack #catHeadLose {
-  animation: catAttackFullV10 0.58s cubic-bezier(.08,.92,.08,1) forwards !important;
+  animation: catAttackFull 0.58s cubic-bezier(.10,.88,.10,1) forwards !important;
 }
 
 .game-over #catHeadLose {
   left: 50% !important;
   top: 50% !important;
-  width: 245vw !important;
-  height: auto !important;
-  max-width: none !important;
-  max-height: none !important;
+  width: 230vw !important;
   transform: translate(-50%, -50%) rotate(1deg) !important;
-  filter: drop-shadow(0 20px 28px rgba(0,0,0,0.55));
+  animation: none !important;
 }
 
-@keyframes catAttackFullV10 {
+@keyframes screenShake {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(7px, -5px) rotate(0.7deg); }
+  50% { transform: translate(-7px, 4px) rotate(-0.7deg); }
+  75% { transform: translate(5px, 7px) rotate(0.4deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@keyframes catAttackFull {
   0% {
     left: 54%;
-    top: 44%;
-    width: min(38vw, 330px);
-    transform: translate(-50%, -50%) scale(0.55) rotate(-9deg);
+    top: 30%;
+    width: min(46vw, 430px);
+    transform: translate(-50%, -50%) scale(0.8) rotate(-7deg);
     opacity: 1;
   }
 
-  14% {
+  16% {
     left: 54%;
-    top: 44%;
-    width: min(30vw, 270px);
-    transform: translate(-50%, -50%) scale(0.42) rotate(-15deg);
-  }
-
-  30% {
-    left: 51%;
-    top: 49%;
-    width: 92vw;
-    transform: translate(-50%, -50%) scale(1) rotate(5deg);
+    top: 30%;
+    width: min(38vw, 350px);
+    transform: translate(-50%, -50%) scale(0.72) rotate(-11deg);
   }
 
   55% {
     left: 50%;
-    top: 50%;
-    width: 170vw;
-    transform: translate(-50%, -50%) scale(1) rotate(-2deg);
+    top: 47%;
+    width: 140vw;
+    transform: translate(-50%, -50%) scale(1) rotate(4deg);
   }
 
   100% {
     left: 50%;
     top: 50%;
-    width: 245vw;
+    width: 230vw;
     transform: translate(-50%, -50%) scale(1) rotate(1deg);
   }
 }
 
-.attack #stage {
-  animation: screenShakeV10 0.045s infinite !important;
-}
-
-@keyframes screenShakeV10 {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  20% { transform: translate(12px, -8px) rotate(1deg); }
-  40% { transform: translate(-10px, 7px) rotate(-1deg); }
-  60% { transform: translate(8px, 10px) rotate(0.8deg); }
-  80% { transform: translate(-8px, -5px) rotate(-0.8deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
+@keyframes subtitleAppear {
+  to {
+    opacity: 0.92;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 560px) {
-  .attack #catHeadLose {
-    animation: catAttackFullMobileV10 0.58s cubic-bezier(.08,.92,.08,1) forwards !important;
+  #catHeadLose {
+    left: 52%;
+    top: 38%;
+    width: 72vw;
   }
 
   .game-over #catHeadLose {
-    width: 285vw !important;
+    width: 260vw !important;
   }
 
-  @keyframes catAttackFullMobileV10 {
+  @keyframes catAttackFull {
     0% {
       left: 52%;
-      top: 45%;
-      width: 56vw;
-      transform: translate(-50%, -50%) scale(0.48) rotate(-10deg);
+      top: 38%;
+      width: 72vw;
+      transform: translate(-50%, -50%) scale(0.75) rotate(-7deg);
       opacity: 1;
     }
 
-    14% {
+    16% {
       left: 52%;
-      top: 45%;
-      width: 46vw;
-      transform: translate(-50%, -50%) scale(0.38) rotate(-15deg);
-    }
-
-    30% {
-      left: 50%;
-      top: 50%;
-      width: 120vw;
-      transform: translate(-50%, -50%) scale(1) rotate(5deg);
+      top: 38%;
+      width: 58vw;
+      transform: translate(-50%, -50%) scale(0.68) rotate(-11deg);
     }
 
     55% {
       left: 50%;
-      top: 50%;
-      width: 205vw;
-      transform: translate(-50%, -50%) scale(1) rotate(-2deg);
+      top: 48%;
+      width: 165vw;
+      transform: translate(-50%, -50%) scale(1) rotate(4deg);
     }
 
     100% {
       left: 50%;
       top: 50%;
-      width: 285vw;
+      width: 260vw;
       transform: translate(-50%, -50%) scale(1) rotate(1deg);
     }
   }
-}
-
-
-/* v11: CSS-only attack flash. It triggers whenever body has .attack. */
-#flashOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: white;
-  opacity: 0;
-  pointer-events: none;
-  mix-blend-mode: normal;
-}
-
-.attack #flashOverlay {
-  animation: attackFlashV11 0.42s linear forwards !important;
-}
-
-@keyframes attackFlashV11 {
-  0%   { opacity: 0; }
-  5%   { opacity: 1; }
-  14%  { opacity: 0; }
-  24%  { opacity: 0.95; }
-  38%  { opacity: 0.08; }
-  56%  { opacity: 0.75; }
-  100% { opacity: 0; }
-}
-
-/* Make the first hit darker after the flash finishes. */
-.attack #darkOverlay {
-  opacity: 0.12 !important;
 }
