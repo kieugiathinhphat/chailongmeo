@@ -645,3 +645,34 @@ button:active {
     }
   }
 }
+
+
+/* v11: CSS-only attack flash. It triggers whenever body has .attack. */
+#flashOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+  mix-blend-mode: normal;
+}
+
+.attack #flashOverlay {
+  animation: attackFlashV11 0.42s linear forwards !important;
+}
+
+@keyframes attackFlashV11 {
+  0%   { opacity: 0; }
+  5%   { opacity: 1; }
+  14%  { opacity: 0; }
+  24%  { opacity: 0.95; }
+  38%  { opacity: 0.08; }
+  56%  { opacity: 0.75; }
+  100% { opacity: 0; }
+}
+
+/* Make the first hit darker after the flash finishes. */
+.attack #darkOverlay {
+  opacity: 0.12 !important;
+}
