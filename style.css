@@ -508,3 +508,140 @@ button:active {
     }
   }
 }
+
+
+/* v10: restore attack flash and snappier death animation */
+#flashOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 125;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#flashOverlay.flash-now {
+  animation: attackFlashV10 0.28s ease-out forwards;
+}
+
+@keyframes attackFlashV10 {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  18% { opacity: 0.12; }
+  36% { opacity: 0.92; }
+  100% { opacity: 0; }
+}
+
+.attack #catHeadLose {
+  animation: catAttackFullV10 0.58s cubic-bezier(.08,.92,.08,1) forwards !important;
+}
+
+.game-over #catHeadLose {
+  left: 50% !important;
+  top: 50% !important;
+  width: 245vw !important;
+  height: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+  transform: translate(-50%, -50%) rotate(1deg) !important;
+  filter: drop-shadow(0 20px 28px rgba(0,0,0,0.55));
+}
+
+@keyframes catAttackFullV10 {
+  0% {
+    left: 54%;
+    top: 44%;
+    width: min(38vw, 330px);
+    transform: translate(-50%, -50%) scale(0.55) rotate(-9deg);
+    opacity: 1;
+  }
+
+  14% {
+    left: 54%;
+    top: 44%;
+    width: min(30vw, 270px);
+    transform: translate(-50%, -50%) scale(0.42) rotate(-15deg);
+  }
+
+  30% {
+    left: 51%;
+    top: 49%;
+    width: 92vw;
+    transform: translate(-50%, -50%) scale(1) rotate(5deg);
+  }
+
+  55% {
+    left: 50%;
+    top: 50%;
+    width: 170vw;
+    transform: translate(-50%, -50%) scale(1) rotate(-2deg);
+  }
+
+  100% {
+    left: 50%;
+    top: 50%;
+    width: 245vw;
+    transform: translate(-50%, -50%) scale(1) rotate(1deg);
+  }
+}
+
+.attack #stage {
+  animation: screenShakeV10 0.045s infinite !important;
+}
+
+@keyframes screenShakeV10 {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  20% { transform: translate(12px, -8px) rotate(1deg); }
+  40% { transform: translate(-10px, 7px) rotate(-1deg); }
+  60% { transform: translate(8px, 10px) rotate(0.8deg); }
+  80% { transform: translate(-8px, -5px) rotate(-0.8deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@media (max-width: 560px) {
+  .attack #catHeadLose {
+    animation: catAttackFullMobileV10 0.58s cubic-bezier(.08,.92,.08,1) forwards !important;
+  }
+
+  .game-over #catHeadLose {
+    width: 285vw !important;
+  }
+
+  @keyframes catAttackFullMobileV10 {
+    0% {
+      left: 52%;
+      top: 45%;
+      width: 56vw;
+      transform: translate(-50%, -50%) scale(0.48) rotate(-10deg);
+      opacity: 1;
+    }
+
+    14% {
+      left: 52%;
+      top: 45%;
+      width: 46vw;
+      transform: translate(-50%, -50%) scale(0.38) rotate(-15deg);
+    }
+
+    30% {
+      left: 50%;
+      top: 50%;
+      width: 120vw;
+      transform: translate(-50%, -50%) scale(1) rotate(5deg);
+    }
+
+    55% {
+      left: 50%;
+      top: 50%;
+      width: 205vw;
+      transform: translate(-50%, -50%) scale(1) rotate(-2deg);
+    }
+
+    100% {
+      left: 50%;
+      top: 50%;
+      width: 285vw;
+      transform: translate(-50%, -50%) scale(1) rotate(1deg);
+    }
+  }
+}

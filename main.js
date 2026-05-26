@@ -11,6 +11,7 @@ const stage = $("stage");
 const brushZone = $("brushZone");
 const comb = $("comb");
 const darkOverlay = $("darkOverlay");
+const flashOverlay = $("flashOverlay");
 const deathText = $("deathText");
 
 const catNormal = $("catNormal");
@@ -114,6 +115,16 @@ function randInt(a, b) {
   return Math.floor(Math.random() * (b - a + 1)) + a;
 }
 
+function flashScreen() {
+  if (!flashOverlay) return;
+  flashOverlay.classList.remove("flash-now");
+  void flashOverlay.offsetWidth;
+  flashOverlay.classList.add("flash-now");
+  setTimeout(() => {
+    flashOverlay.classList.remove("flash-now");
+  }, 320);
+}
+
 function clearStareTimer() {
   if (stareReturnTimer !== null) {
     clearTimeout(stareReturnTimer);
@@ -187,7 +198,8 @@ function setState(next) {
     catHeadStare.classList.add("hidden");
     catHeadLose.classList.remove("hidden");
 
-    darkOverlay.style.opacity = "0.28";
+    darkOverlay.style.opacity = "0.18";
+    flashScreen();
     playSound(audio.attackMeow);
     playSound(audio.whoosh);
     setTimeout(gameOver, 620);
