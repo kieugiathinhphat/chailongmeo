@@ -3,10 +3,8 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-html,
-body {
+html, body {
   margin: 0;
-  width: 100%;
   height: 100%;
   overflow: hidden;
   background: #f5f5f5;
@@ -35,7 +33,6 @@ button:active {
 .screen {
   width: 100vw;
   height: 100vh;
-  height: 100dvh;
 }
 
 .hidden {
@@ -70,7 +67,7 @@ button:active {
 
 #hud {
   position: fixed;
-  top: max(12px, env(safe-area-inset-top));
+  top: 14px;
   left: 20px;
   right: 20px;
   z-index: 70;
@@ -89,14 +86,13 @@ button:active {
 }
 
 #scoreBox {
-  font-size: clamp(22px, 2.7vw, 38px);
-  white-space: nowrap;
+  font-size: clamp(24px, 2.7vw, 38px);
 }
 
 #hint {
   max-width: min(58vw, 820px);
   text-align: right;
-  font-size: clamp(22px, 3vw, 44px);
+  font-size: clamp(26px, 3.2vw, 48px);
   line-height: 1.05;
   opacity: 0.72;
 }
@@ -104,7 +100,7 @@ button:active {
 #soundBtn {
   position: fixed !important;
   right: 18px !important;
-  bottom: max(18px, env(safe-area-inset-bottom)) !important;
+  bottom: 18px !important;
   left: auto !important;
   top: auto !important;
   z-index: 160 !important;
@@ -132,23 +128,20 @@ button:active {
 }
 
 #stage {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
+  position: relative;
+  width: min(100vw, 900px);
   height: 100vh;
-  height: 100dvh;
-  margin: 0;
-  overflow: hidden;
+  margin: 0 auto;
+  overflow: visible;
   touch-action: none;
 }
 
 #catLayer {
   position: absolute;
   left: 50%;
-  bottom: 48px;
-  width: min(72vw, 560px);
-  height: min(70vh, 660px);
-  height: min(70dvh, 660px);
+  bottom: 54px;
+  width: min(86vw, 560px);
+  height: min(72vh, 660px);
   transform: translateX(-50%);
 }
 
@@ -158,31 +151,36 @@ button:active {
   bottom: 0;
   max-width: 100%;
   max-height: 100%;
-  height: 100%;
-  width: auto;
   transform: translateX(-50%);
-  object-fit: contain;
   pointer-events: none;
   filter: drop-shadow(0 18px 18px rgba(0,0,0,0.08));
 }
 
-/* cat_head_stare.png is a full-cat image, not a transparent head.
-   So we display it as a full replacement sprite instead of layering it over the body. */
-.stare-img {
+.cat.normal,
+.cat.body {
   height: 100%;
-  width: auto;
 }
 
-/* This asset can stay unused for now; it is kept only for future experiments. */
-.body {
-  height: 100%;
-  width: auto;
+.cat-head {
+  position: absolute;
+  z-index: 4;
+  width: 58%;
+  left: 54%;
+  top: 2%;
+  transform: translate(-50%, 0) rotate(-2deg);
+  pointer-events: none;
+  filter: drop-shadow(0 10px 12px rgba(0,0,0,0.12));
+}
+
+.cat-head.lose {
+  width: 62%;
+  top: -1%;
 }
 
 #comb {
   position: fixed;
   z-index: 80;
-  width: 112px;
+  width: 120px;
   left: 54vw;
   top: 62vh;
   transform: translate(-50%, -50%) rotate(-28deg);
@@ -192,11 +190,14 @@ button:active {
 }
 
 #brushZone {
-  position: fixed;
+  position: absolute;
   z-index: 2;
-  border-radius: 999px;
+  left: 18%;
+  top: 38%;
+  width: 42%;
+  height: 34%;
+  border-radius: 50%;
   pointer-events: none;
-  opacity: 0;
 }
 
 #darkOverlay {
@@ -254,8 +255,8 @@ button:active {
   animation: tinyShake 0.11s infinite;
 }
 
-.stare #catLayer {
-  animation: starePopWholeCat 0.22s ease-out both;
+.stare #catHeadStare {
+  animation: starePop 0.22s ease-out both;
 }
 
 .attack #stage {
@@ -270,7 +271,6 @@ button:active {
   top: 50%;
   width: 230vw;
   max-width: none;
-  height: auto;
   transform: translate(-50%, -50%) rotate(1deg);
 }
 
@@ -296,10 +296,10 @@ button:active {
   50% { transform: translateX(-50%) rotate(-0.8deg); }
 }
 
-@keyframes starePopWholeCat {
-  0% { transform: translateX(-50%) scale(0.94) rotate(-2deg); opacity: 0.2; }
-  70% { transform: translateX(-50%) scale(1.04) rotate(1deg); opacity: 1; }
-  100% { transform: translateX(-50%) scale(1) rotate(0deg); opacity: 1; }
+@keyframes starePop {
+  0% { transform: translate(-50%, 0) scale(0.35) rotate(-8deg); opacity: 0; }
+  70% { transform: translate(-50%, 0) scale(1.08) rotate(-2deg); opacity: 1; }
+  100% { transform: translate(-50%, 0) scale(1) rotate(-2deg); opacity: 1; }
 }
 
 @keyframes screenShake {
@@ -348,510 +348,38 @@ button:active {
   }
 }
 
-@media (max-width: 560px) {
-  #hud {
-    top: max(10px, env(safe-area-inset-top));
-    left: 14px;
-    right: 14px;
-    gap: 10px;
-  }
-
-  #scoreBox {
-    font-size: clamp(20px, 6.2vw, 28px);
-  }
-
-  #hint {
-    font-size: clamp(18px, 5.7vw, 27px);
-    max-width: 56vw;
-  }
-
+@media (max-width: 520px) {
   #catLayer {
-    width: 92vw;
-    height: 67vh;
-    height: 67dvh;
-    bottom: max(64px, env(safe-area-inset-bottom));
+    width: 96vw;
+    bottom: 72px;
   }
 
   #comb {
-    width: 86px;
+    width: 98px;
+  }
+
+  #hud {
+    top: 10px;
+    left: 12px;
+    right: 12px;
+  }
+
+  #hint {
+    font-size: clamp(20px, 6vw, 34px);
+    max-width: 62vw;
+  }
+
+  #scoreBox {
+    font-size: clamp(18px, 5.5vw, 30px);
   }
 
   #soundBtn {
     right: 12px !important;
-    bottom: max(14px, env(safe-area-inset-bottom)) !important;
+    bottom: 12px !important;
     width: 50px !important;
     height: 50px !important;
     min-width: 50px !important;
     min-height: 50px !important;
     font-size: 23px !important;
-  }
-
-  #youDied {
-    font-size: clamp(52px, 15vw, 86px);
-  }
-
-  #deathSubtitle {
-    font-size: clamp(18px, 5vw, 28px);
-  }
-}
-
-@media (orientation: landscape) and (max-height: 520px) {
-  #catLayer {
-    width: min(52vw, 520px);
-    height: 72dvh;
-    bottom: 20px;
-  }
-
-  #hint {
-    font-size: clamp(18px, 4vh, 28px);
-  }
-}
-
-
-/* v9: cat_head_lose is outside #catLayer, so it can truly jump to the full viewport. */
-#catHeadLose {
-  position: fixed;
-  z-index: 100;
-  left: 50%;
-  top: 50%;
-  width: min(52vw, 430px);
-  height: auto;
-  max-width: none;
-  max-height: none;
-  transform: translate(-50%, -50%) scale(0.7) rotate(-7deg);
-  pointer-events: none;
-  filter: drop-shadow(0 18px 22px rgba(0,0,0,0.35));
-}
-
-.attack #catHeadLose {
-  animation: catAttackFullV9 0.62s cubic-bezier(.10,.88,.10,1) forwards;
-}
-
-.game-over #catHeadLose {
-  left: 50%;
-  top: 50%;
-  width: 240vw;
-  height: auto;
-  max-width: none;
-  max-height: none;
-  transform: translate(-50%, -50%) rotate(1deg);
-}
-
-@keyframes catAttackFullV9 {
-  0% {
-    left: 54%;
-    top: 42%;
-    width: min(42vw, 360px);
-    transform: translate(-50%, -50%) scale(0.55) rotate(-10deg);
-    opacity: 1;
-  }
-
-  18% {
-    left: 54%;
-    top: 42%;
-    width: min(34vw, 300px);
-    transform: translate(-50%, -50%) scale(0.45) rotate(-14deg);
-  }
-
-  58% {
-    left: 50%;
-    top: 50%;
-    width: 150vw;
-    transform: translate(-50%, -50%) scale(1) rotate(4deg);
-  }
-
-  100% {
-    left: 50%;
-    top: 50%;
-    width: 240vw;
-    transform: translate(-50%, -50%) scale(1) rotate(1deg);
-  }
-}
-
-@media (max-width: 560px) {
-  #catHeadLose {
-    width: 70vw;
-  }
-
-  .game-over #catHeadLose {
-    width: 270vw;
-  }
-
-  @keyframes catAttackFullV9 {
-    0% {
-      left: 52%;
-      top: 44%;
-      width: 62vw;
-      transform: translate(-50%, -50%) scale(0.5) rotate(-10deg);
-      opacity: 1;
-    }
-
-    18% {
-      left: 52%;
-      top: 44%;
-      width: 52vw;
-      transform: translate(-50%, -50%) scale(0.42) rotate(-14deg);
-    }
-
-    58% {
-      left: 50%;
-      top: 50%;
-      width: 180vw;
-      transform: translate(-50%, -50%) scale(1) rotate(4deg);
-    }
-
-    100% {
-      left: 50%;
-      top: 50%;
-      width: 270vw;
-      transform: translate(-50%, -50%) scale(1) rotate(1deg);
-    }
-  }
-}
-
-/* v12: restore the earlier death feel, but keep catHeadLose outside catLayer. */
-
-#darkOverlay {
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  background: black;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 280ms ease;
-}
-
-#deathText {
-  position: fixed;
-  inset: 0;
-  z-index: 130;
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 14px;
-  pointer-events: none;
-  text-align: center;
-}
-
-#youDied {
-  color: #b10000;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(54px, 16vw, 142px);
-  font-weight: 900;
-  letter-spacing: 4px;
-  text-shadow: 0 4px 0 #000, 0 0 24px rgba(255,0,0,0.5);
-}
-
-#deathSubtitle {
-  color: #eeeeee;
-  font-size: clamp(18px, 3.2vw, 38px);
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-shadow: 0 3px 0 #000, 0 0 18px rgba(0,0,0,0.8);
-  opacity: 0;
-  transform: translateY(-8px);
-  animation: subtitleAppear 0.35s ease-out 0.45s forwards;
-}
-
-.attack #stage {
-  animation: screenShake 0.055s infinite !important;
-}
-
-#catHeadLose {
-  position: fixed !important;
-  z-index: 105 !important;
-  left: 54%;
-  top: 30%;
-  width: min(46vw, 430px);
-  height: auto !important;
-  max-width: none !important;
-  max-height: none !important;
-  transform: translate(-50%, -50%) scale(0.8) rotate(-7deg);
-  pointer-events: none;
-  filter: drop-shadow(0 18px 22px rgba(0,0,0,0.35));
-}
-
-.attack #catHeadLose {
-  animation: catAttackFull 0.58s cubic-bezier(.10,.88,.10,1) forwards !important;
-}
-
-.game-over #catHeadLose {
-  left: 50% !important;
-  top: 50% !important;
-  width: 230vw !important;
-  transform: translate(-50%, -50%) rotate(1deg) !important;
-  animation: none !important;
-}
-
-@keyframes screenShake {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  25% { transform: translate(7px, -5px) rotate(0.7deg); }
-  50% { transform: translate(-7px, 4px) rotate(-0.7deg); }
-  75% { transform: translate(5px, 7px) rotate(0.4deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
-}
-
-@keyframes catAttackFull {
-  0% {
-    left: 54%;
-    top: 30%;
-    width: min(46vw, 430px);
-    transform: translate(-50%, -50%) scale(0.8) rotate(-7deg);
-    opacity: 1;
-  }
-
-  16% {
-    left: 54%;
-    top: 30%;
-    width: min(38vw, 350px);
-    transform: translate(-50%, -50%) scale(0.72) rotate(-11deg);
-  }
-
-  55% {
-    left: 50%;
-    top: 47%;
-    width: 140vw;
-    transform: translate(-50%, -50%) scale(1) rotate(4deg);
-  }
-
-  100% {
-    left: 50%;
-    top: 50%;
-    width: 230vw;
-    transform: translate(-50%, -50%) scale(1) rotate(1deg);
-  }
-}
-
-@keyframes subtitleAppear {
-  to {
-    opacity: 0.92;
-    transform: translateY(0);
-  }
-}
-
-@media (max-width: 560px) {
-  #catHeadLose {
-    left: 52%;
-    top: 38%;
-    width: 72vw;
-  }
-
-  .game-over #catHeadLose {
-    width: 260vw !important;
-  }
-
-  @keyframes catAttackFull {
-    0% {
-      left: 52%;
-      top: 38%;
-      width: 72vw;
-      transform: translate(-50%, -50%) scale(0.75) rotate(-7deg);
-      opacity: 1;
-    }
-
-    16% {
-      left: 52%;
-      top: 38%;
-      width: 58vw;
-      transform: translate(-50%, -50%) scale(0.68) rotate(-11deg);
-    }
-
-    55% {
-      left: 50%;
-      top: 48%;
-      width: 165vw;
-      transform: translate(-50%, -50%) scale(1) rotate(4deg);
-    }
-
-    100% {
-      left: 50%;
-      top: 50%;
-      width: 260vw;
-      transform: translate(-50%, -50%) scale(1) rotate(1deg);
-    }
-  }
-}
-
-/* v13: cinematic death animation, restored from the nicer early feel. */
-
-.attack #stage {
-  animation: screenShakeCinematicV13 0.045s infinite !important;
-}
-
-#catHeadLose {
-  position: fixed !important;
-  z-index: 115 !important;
-  left: 53%;
-  top: 42%;
-  width: min(44vw, 400px);
-  height: auto !important;
-  max-width: none !important;
-  max-height: none !important;
-  transform: translate(-50%, -50%) scale(0.72) rotate(-8deg);
-  pointer-events: none;
-  filter:
-    drop-shadow(0 18px 22px rgba(0,0,0,0.35))
-    contrast(1.04)
-    saturate(1.08);
-}
-
-.attack #catHeadLose {
-  animation: catAttackCinematicV13 0.72s cubic-bezier(.08,.92,.08,1) forwards !important;
-}
-
-.game-over #catHeadLose {
-  left: 50% !important;
-  top: 50% !important;
-  width: 218vw !important;
-  height: auto !important;
-  max-width: none !important;
-  max-height: none !important;
-  transform: translate(-50%, -50%) rotate(1deg) !important;
-  animation: none !important;
-  filter:
-    drop-shadow(0 24px 30px rgba(0,0,0,0.55))
-    contrast(1.08)
-    saturate(1.1);
-}
-
-.game-over #darkOverlay {
-  opacity: 0.58 !important;
-}
-
-#deathText {
-  z-index: 135 !important;
-}
-
-#youDied {
-  color: #b10000 !important;
-  font-family: Georgia, 'Times New Roman', serif !important;
-  font-size: clamp(54px, 16vw, 142px) !important;
-  font-weight: 900 !important;
-  letter-spacing: 4px !important;
-  text-shadow:
-    0 4px 0 #000,
-    0 0 24px rgba(255,0,0,0.5),
-    0 0 42px rgba(120,0,0,0.45) !important;
-}
-
-#deathSubtitle {
-  color: #eeeeee !important;
-  font-size: clamp(18px, 3.2vw, 38px) !important;
-  font-weight: 800 !important;
-  letter-spacing: 1px !important;
-  text-shadow: 0 3px 0 #000, 0 0 18px rgba(0,0,0,0.8) !important;
-  opacity: 0;
-  transform: translateY(-8px);
-  animation: subtitleAppear 0.35s ease-out 0.45s forwards !important;
-}
-
-@keyframes screenShakeCinematicV13 {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  20% { transform: translate(10px, -7px) rotate(0.8deg); }
-  40% { transform: translate(-9px, 6px) rotate(-0.8deg); }
-  60% { transform: translate(7px, 9px) rotate(0.55deg); }
-  80% { transform: translate(-6px, -5px) rotate(-0.55deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
-}
-
-@keyframes catAttackCinematicV13 {
-  0% {
-    left: 53%;
-    top: 42%;
-    width: min(42vw, 380px);
-    transform: translate(-50%, -50%) scale(0.72) rotate(-8deg);
-    opacity: 1;
-  }
-
-  12% {
-    left: 54%;
-    top: 42%;
-    width: min(32vw, 300px);
-    transform: translate(-50%, -50%) scale(0.55) rotate(-13deg);
-  }
-
-  26% {
-    left: 51%;
-    top: 48%;
-    width: 95vw;
-    transform: translate(-50%, -50%) scale(1) rotate(5deg);
-  }
-
-  48% {
-    left: 50%;
-    top: 50%;
-    width: 158vw;
-    transform: translate(-50%, -50%) scale(1) rotate(-3deg);
-  }
-
-  72% {
-    left: 50%;
-    top: 50%;
-    width: 230vw;
-    transform: translate(-50%, -50%) scale(1) rotate(2deg);
-  }
-
-  100% {
-    left: 50%;
-    top: 50%;
-    width: 218vw;
-    transform: translate(-50%, -50%) scale(1) rotate(1deg);
-  }
-}
-
-@media (max-width: 560px) {
-  #catHeadLose {
-    left: 52%;
-    top: 44%;
-    width: 66vw;
-  }
-
-  .game-over #catHeadLose {
-    width: 245vw !important;
-  }
-
-  @keyframes catAttackCinematicV13 {
-    0% {
-      left: 52%;
-      top: 44%;
-      width: 64vw;
-      transform: translate(-50%, -50%) scale(0.72) rotate(-8deg);
-      opacity: 1;
-    }
-
-    12% {
-      left: 53%;
-      top: 44%;
-      width: 50vw;
-      transform: translate(-50%, -50%) scale(0.55) rotate(-13deg);
-    }
-
-    26% {
-      left: 51%;
-      top: 49%;
-      width: 118vw;
-      transform: translate(-50%, -50%) scale(1) rotate(5deg);
-    }
-
-    48% {
-      left: 50%;
-      top: 50%;
-      width: 178vw;
-      transform: translate(-50%, -50%) scale(1) rotate(-3deg);
-    }
-
-    72% {
-      left: 50%;
-      top: 50%;
-      width: 260vw;
-      transform: translate(-50%, -50%) scale(1) rotate(2deg);
-    }
-
-    100% {
-      left: 50%;
-      top: 50%;
-      width: 245vw;
-      transform: translate(-50%, -50%) scale(1) rotate(1deg);
-    }
   }
 }

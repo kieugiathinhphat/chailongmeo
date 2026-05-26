@@ -11,7 +11,6 @@ const stage = $("stage");
 const brushZone = $("brushZone");
 const comb = $("comb");
 const darkOverlay = $("darkOverlay");
-const flashOverlay = $("flashOverlay");
 const deathText = $("deathText");
 
 const catNormal = $("catNormal");
@@ -115,32 +114,6 @@ function randInt(a, b) {
   return Math.floor(Math.random() * (b - a + 1)) + a;
 }
 
-function flashScreen() {
-  if (!flashOverlay) return;
-  flashOverlay.classList.remove("flash-now");
-  void flashOverlay.offsetWidth;
-  flashOverlay.classList.add("flash-now");
-  setTimeout(() => {
-    flashOverlay.classList.remove("flash-now");
-  }, 320);
-}
-
-function attackFlashV13() {
-  darkOverlay.style.transition = "none";
-  darkOverlay.style.background = "white";
-  darkOverlay.style.opacity = "0.96";
-
-  setTimeout(() => {
-    darkOverlay.style.opacity = "0";
-  }, 55);
-
-  setTimeout(() => {
-    darkOverlay.style.background = "black";
-    darkOverlay.style.transition = "opacity 280ms ease";
-    darkOverlay.style.opacity = "0.18";
-  }, 130);
-}
-
 function clearStareTimer() {
   if (stareReturnTimer !== null) {
     clearTimeout(stareReturnTimer);
@@ -194,9 +167,8 @@ function setState(next) {
     hintEl.textContent = "DỪNG LẠI!";
     document.body.classList.add("stare");
 
-    // Mobile fix: use the full-cat stare image as a replacement sprite.
     catNormal.classList.add("hidden");
-    catBody.classList.add("hidden");
+    catBody.classList.remove("hidden");
     catHeadStare.classList.remove("hidden");
     catHeadLose.classList.add("hidden");
 
@@ -210,15 +182,14 @@ function setState(next) {
     document.body.classList.add("attack");
 
     catNormal.classList.add("hidden");
-    catBody.classList.add("hidden");
+    catBody.classList.remove("hidden");
     catHeadStare.classList.add("hidden");
     catHeadLose.classList.remove("hidden");
 
-    darkOverlay.style.opacity = "0.18";
-    flashScreen();
+    darkOverlay.style.opacity = "0.28";
     playSound(audio.attackMeow);
     playSound(audio.whoosh);
-    setTimeout(gameOver, 720);
+    setTimeout(gameOver, 620);
   }
 
   if (next === S.GAME_OVER) {
@@ -303,29 +274,8 @@ function rectContains(rect, x, y) {
   return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
 }
 
-function getBrushRect() {
-  // Compute brush zone from the actual rendered cat size.
-  // This works better than hard-coded CSS percentages on mobile.
-  const r = catNormal.getBoundingClientRect();
-
-  return {
-    left: r.left + r.width * 0.08,
-    right: r.left + r.width * 0.62,
-    top: r.top + r.height * 0.36,
-    bottom: r.top + r.height * 0.78,
-  };
-}
-
-function updateDebugBrushZone() {
-  const r = getBrushRect();
-  brushZone.style.left = `${r.left}px`;
-  brushZone.style.top = `${r.top}px`;
-  brushZone.style.width = `${r.right - r.left}px`;
-  brushZone.style.height = `${r.bottom - r.top}px`;
-}
-
 function isOnBrushZone(x, y) {
-  const r = getBrushRect();
+  const r = brushZone.getBoundingClientRect();
   return rectContains(r, x, y);
 }
 
@@ -334,34 +284,30 @@ function handleBrushMovement(p, dt) {
 
   if (inputLockedUntilRelease) {
     document.body.classList.remove("brushing");
-    hintEl.textContent = "Th? chu?t r?i ch?i ti?p";
+    hintEl.textContent = "Thả chuột rồi chải tiếp";
     return;
   }
 
-  if (!pointerDown || !lastPoint) {
-    document.body.classList.remove("brushing");
-    return;
-  }
+  const onCat = isOnBrushZone(p.x, p.y);
+  document.body.classList.toggle("brushing", pointerDown && onCat && state !== S.STARE);
+
+  if (!pointerDown || !lastPoint) return;
 
   const dx = p.x - lastPoint.x;
   const dy = p.y - lastPoint.y;
   const dist = Math.hypot(dx, dy);
+
+  if (!onCat) return;
+
   const now = performance.now();
 
-  // Important:
-  // During STARE, the normal cat image is hidden, so the brush zone can be invalid.
-  // The player loses if they keep moving while holding the mouse/finger.
   if (state === S.STARE) {
-    if (now - stareStartedAt > 230 && dist > 4.0) {
+    if (now - stareStartedAt > 230 && dist > 2.0) {
       setState(S.ATTACK);
     }
     return;
   }
 
-  const onCat = isOnBrushZone(p.x, p.y);
-  document.body.classList.toggle("brushing", onCat);
-
-  if (!onCat) return;
   if (state !== S.CALM) return;
 
   brushProgress += dist;
@@ -440,10 +386,4 @@ soundBtn.addEventListener("click", (e) => {
 window.addEventListener("load", () => {
   applyMute();
   moveComb(window.innerWidth * 0.58, window.innerHeight * 0.64);
-  updateDebugBrushZone();
-});
-
-window.addEventListener("resize", updateDebugBrushZone);
-window.addEventListener("orientationchange", () => {
-  setTimeout(updateDebugBrushZone, 250);
 });
