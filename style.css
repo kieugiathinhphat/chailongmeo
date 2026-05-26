@@ -383,3 +383,50 @@ button:active {
     font-size: 23px !important;
   }
 }
+
+/* v20 mobile stare sprite fix only.
+   Keep the old death animation. Only make cat_head_stare.png behave like
+   a full-cat replacement sprite during STARE. */
+
+.stare #catNormal,
+.stare #catBody {
+  display: none !important;
+}
+
+.stare #catHeadStare {
+  position: absolute !important;
+  z-index: 4 !important;
+  left: 50% !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: 0 !important;
+
+  width: auto !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+
+  transform: translateX(-50%) !important;
+  object-fit: contain !important;
+  pointer-events: none !important;
+  filter: drop-shadow(0 18px 18px rgba(0,0,0,0.08)) !important;
+  animation: stareFullSpriteFixV20 0.22s ease-out both !important;
+}
+
+@keyframes stareFullSpriteFixV20 {
+  0% {
+    transform: translateX(-50%) scale(0.94) rotate(-2deg);
+    opacity: 0.2;
+  }
+
+  70% {
+    transform: translateX(-50%) scale(1.04) rotate(1deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(-50%) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+

@@ -168,7 +168,7 @@ function setState(next) {
     document.body.classList.add("stare");
 
     catNormal.classList.add("hidden");
-    catBody.classList.remove("hidden");
+    catBody.classList.add("hidden");
     catHeadStare.classList.remove("hidden");
     catHeadLose.classList.add("hidden");
 
@@ -284,30 +284,35 @@ function handleBrushMovement(p, dt) {
 
   if (inputLockedUntilRelease) {
     document.body.classList.remove("brushing");
-    hintEl.textContent = "Thả chuột rồi chải tiếp";
+    hintEl.textContent = "Th\u1ea3 chu\u1ed9t r\u1ed3i ch\u1ea3i ti\u1ebfp";
+    return;
+  }
+
+  if (!pointerDown || !lastPoint) {
+    const onCatPreview = isOnBrushZone(p.x, p.y);
+    document.body.classList.toggle("brushing", pointerDown && onCatPreview && state !== S.STARE);
+    return;
+  }
+
+  const dx = p.x - lastPoint.x;
+  const dy = p.y - lastPoint.y;
+  const dist = Math.hypot(dx, dy);
+  const now = performance.now();
+
+  if (state === S.STARE) {
+    document.body.classList.remove("brushing");
+
+    if (now - stareStartedAt > 230 && dist > 2.0) {
+      setState(S.ATTACK);
+    }
+
     return;
   }
 
   const onCat = isOnBrushZone(p.x, p.y);
   document.body.classList.toggle("brushing", pointerDown && onCat && state !== S.STARE);
 
-  if (!pointerDown || !lastPoint) return;
-
-  const dx = p.x - lastPoint.x;
-  const dy = p.y - lastPoint.y;
-  const dist = Math.hypot(dx, dy);
-
   if (!onCat) return;
-
-  const now = performance.now();
-
-  if (state === S.STARE) {
-    if (now - stareStartedAt > 230 && dist > 2.0) {
-      setState(S.ATTACK);
-    }
-    return;
-  }
-
   if (state !== S.CALM) return;
 
   brushProgress += dist;
