@@ -406,3 +406,105 @@ button:active {
     font-size: clamp(18px, 4vh, 28px);
   }
 }
+
+
+/* v9: cat_head_lose is outside #catLayer, so it can truly jump to the full viewport. */
+#catHeadLose {
+  position: fixed;
+  z-index: 100;
+  left: 50%;
+  top: 50%;
+  width: min(52vw, 430px);
+  height: auto;
+  max-width: none;
+  max-height: none;
+  transform: translate(-50%, -50%) scale(0.7) rotate(-7deg);
+  pointer-events: none;
+  filter: drop-shadow(0 18px 22px rgba(0,0,0,0.35));
+}
+
+.attack #catHeadLose {
+  animation: catAttackFullV9 0.62s cubic-bezier(.10,.88,.10,1) forwards;
+}
+
+.game-over #catHeadLose {
+  left: 50%;
+  top: 50%;
+  width: 240vw;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  transform: translate(-50%, -50%) rotate(1deg);
+}
+
+@keyframes catAttackFullV9 {
+  0% {
+    left: 54%;
+    top: 42%;
+    width: min(42vw, 360px);
+    transform: translate(-50%, -50%) scale(0.55) rotate(-10deg);
+    opacity: 1;
+  }
+
+  18% {
+    left: 54%;
+    top: 42%;
+    width: min(34vw, 300px);
+    transform: translate(-50%, -50%) scale(0.45) rotate(-14deg);
+  }
+
+  58% {
+    left: 50%;
+    top: 50%;
+    width: 150vw;
+    transform: translate(-50%, -50%) scale(1) rotate(4deg);
+  }
+
+  100% {
+    left: 50%;
+    top: 50%;
+    width: 240vw;
+    transform: translate(-50%, -50%) scale(1) rotate(1deg);
+  }
+}
+
+@media (max-width: 560px) {
+  #catHeadLose {
+    width: 70vw;
+  }
+
+  .game-over #catHeadLose {
+    width: 270vw;
+  }
+
+  @keyframes catAttackFullV9 {
+    0% {
+      left: 52%;
+      top: 44%;
+      width: 62vw;
+      transform: translate(-50%, -50%) scale(0.5) rotate(-10deg);
+      opacity: 1;
+    }
+
+    18% {
+      left: 52%;
+      top: 44%;
+      width: 52vw;
+      transform: translate(-50%, -50%) scale(0.42) rotate(-14deg);
+    }
+
+    58% {
+      left: 50%;
+      top: 50%;
+      width: 180vw;
+      transform: translate(-50%, -50%) scale(1) rotate(4deg);
+    }
+
+    100% {
+      left: 50%;
+      top: 50%;
+      width: 270vw;
+      transform: translate(-50%, -50%) scale(1) rotate(1deg);
+    }
+  }
+}
