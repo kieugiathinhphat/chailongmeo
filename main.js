@@ -29,7 +29,7 @@ const S = {
 let state = S.CALM;
 let score = 0;
 let brushProgress = 0;
-let nextStareAt = randInt(4, 7);
+let nextStareAt = 0;
 let pointerDown = false;
 let inputLockedUntilRelease = false;
 let lastPoint = null;
@@ -66,7 +66,7 @@ function makeAudio(src, opts = {}) {
 
 function applyMute() {
   for (const a of allAudio()) a.muted = muted;
-  soundBtn.textContent = muted ? "🔇" : "🔊";
+  soundBtn.textContent = muted ? "\u{1F507}" : "\u{1F50A}";
   soundBtn.setAttribute("aria-label", muted ? "Turn sound on" : "Turn sound off");
 }
 
@@ -114,6 +114,68 @@ function randInt(a, b) {
   return Math.floor(Math.random() * (b - a + 1)) + a;
 }
 
+function randFloat(a, b) {
+  return a + Math.random() * (b - a);
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function getDifficulty() {
+  return clamp(score / 45, 0, 1);
+}
+
+function rollNextStareGap(isInitial = false) {
+  const d = getDifficulty();
+
+  if (isInitial || score <= 0) {
+    return randInt(4, 7);
+  }
+
+  const minGap = Math.round(clamp(4 - d * 3 + randFloat(-0.6, 0.6), 1, 5));
+  const maxGap = Math.round(clamp(7 - d * 4 + randFloat(-1.0, 1.0), minGap + 1, 8));
+
+  return randInt(minGap, maxGap);
+}
+
+function scheduleNextStare(isInitial = false) {
+  nextStareAt = score + rollNextStareGap(isInitial);
+}
+
+function getWarningDelay() {
+  const d = getDifficulty();
+
+  const minDelay = clamp(520 - d * 260, 260, 520);
+  const maxDelay = clamp(1050 - d * 420, 560, 1050);
+
+  return Math.round(randFloat(minDelay, maxDelay));
+}
+
+function getStareSafeMs() {
+  const d = getDifficulty();
+
+  const base = 1250 + d * 420;
+  const jitter = randFloat(-250, 300);
+
+  return Math.round(clamp(base + jitter, 850, 2100));
+}
+
+function getStareGraceMs() {
+  const d = getDifficulty();
+  return Math.round(clamp(260 - d * 130, 120, 260));
+}
+
+function getStareMoveThreshold() {
+  const d = getDifficulty();
+  return clamp(3.2 - d * 2.0, 1.15, 3.2);
+}
+
+function getBrushNeeded() {
+  const d = getDifficulty();
+  return Math.round(clamp(145 - d * 25, 120, 145));
+}
+
 function clearStareTimer() {
   if (stareReturnTimer !== null) {
     clearTimeout(stareReturnTimer);
@@ -142,8 +204,8 @@ function setState(next) {
   if (next === S.CALM) {
     hardResetVisuals();
     hintEl.textContent = inputLockedUntilRelease
-      ? "Thả chuột rồi chải tiếp"
-      : "Kéo lược lên lưng mèo";
+      ? "Th\u1ea3 chu\u1ed9t r\u1ed3i ch\u1ea3i ti\u1ebfp"
+      : "K\u00e9o l\u01b0\u1ee3c l\u00ean l\u01b0ng m\u00e8o";
 
     if (!bgmOn) {
       bgmOn = true;
@@ -154,17 +216,18 @@ function setState(next) {
 
   if (next === S.WARNING) {
     document.body.classList.remove("brushing", "stare", "attack", "game-over");
-    hintEl.textContent = "Nó bắt đầu khó chịu...";
+    hintEl.textContent = "N\u00f3 b\u1eaft \u0111\u1ea7u kh\u00f3 ch\u1ecbu...";
     document.body.classList.add("warning");
     playSound(audio.grumble);
+
     setTimeout(() => {
       if (state === S.WARNING) enterStare();
-    }, 850);
+    }, getWarningDelay());
   }
 
   if (next === S.STARE) {
     document.body.classList.remove("brushing", "warning", "attack", "game-over");
-    hintEl.textContent = "DỪNG LẠI!";
+    hintEl.textContent = "D\u1eeaNG L\u1ea0I!";
     document.body.classList.add("stare");
 
     catNormal.classList.add("hidden");
@@ -178,7 +241,7 @@ function setState(next) {
   if (next === S.ATTACK) {
     clearStareTimer();
     document.body.classList.remove("brushing", "warning", "stare", "game-over");
-    hintEl.textContent = "Sai lầm rồi.";
+    hintEl.textContent = "Sai l\u1ea7m r\u1ed3i.";
     document.body.classList.add("attack");
 
     catNormal.classList.add("hidden");
@@ -215,12 +278,12 @@ function enterStare() {
       if (pointerDown) inputLockedUntilRelease = true;
       nextRound();
     }
-  }, 1450);
+  }, getStareSafeMs());
 }
 
 function nextRound() {
   brushProgress = 0;
-  nextStareAt = score + randInt(3, 6);
+  scheduleNextStare(false);
   bgmOn = false;
   setState(S.CALM);
 }
@@ -237,11 +300,13 @@ function resetGame() {
 
   score = 0;
   brushProgress = 0;
-  nextStareAt = randInt(4, 7);
+  nextStareAt = 0;
   pointerDown = false;
   inputLockedUntilRelease = false;
   lastPoint = null;
   scoreEl.textContent = score;
+
+  scheduleNextStare(true);
 
   stopSound(audio.attackMeow);
   stopSound(audio.whoosh);
@@ -302,7 +367,7 @@ function handleBrushMovement(p, dt) {
   if (state === S.STARE) {
     document.body.classList.remove("brushing");
 
-    if (now - stareStartedAt > 230 && dist > 2.0) {
+    if (now - stareStartedAt > getStareGraceMs() && dist > getStareMoveThreshold()) {
       setState(S.ATTACK);
     }
 
@@ -322,7 +387,7 @@ function handleBrushMovement(p, dt) {
     lastBrushSoundAt = now;
   }
 
-  if (brushProgress > 145) {
+  if (brushProgress > getBrushNeeded()) {
     brushProgress = 0;
     score++;
     scoreEl.textContent = score;
@@ -360,7 +425,7 @@ stage.addEventListener("pointerup", () => {
   document.body.classList.remove("brushing");
 
   if (state === S.CALM) {
-    hintEl.textContent = "Kéo lược lên lưng mèo";
+    hintEl.textContent = "K\u00e9o l\u01b0\u1ee3c l\u00ean l\u01b0ng m\u00e8o";
   }
 });
 
