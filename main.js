@@ -6,6 +6,7 @@ const playBtn = $("playBtn");
 const restartBtn = $("restartBtn");
 const soundBtn = $("soundBtn");
 const scoreEl = $("score");
+const bestScoreEl = $("bestScore");
 const hintEl = $("hint");
 const stage = $("stage");
 const brushZone = $("brushZone");
@@ -28,6 +29,7 @@ const S = {
 
 let state = S.CALM;
 let score = 0;
+let bestScore = loadBestScore();
 let brushProgress = 0;
 let nextStareAt = 0;
 let pointerDown = false;
@@ -108,6 +110,36 @@ function fadeAudio(a, target, ms = 350) {
   }
 
   requestAnimationFrame(step);
+}
+
+
+function loadBestScore() {
+  try {
+    const saved = Number(localStorage.getItem("chailongmeo.bestScore"));
+    return Number.isFinite(saved) && saved > 0 ? Math.floor(saved) : 0;
+  } catch (_) {
+    return 0;
+  }
+}
+
+function saveBestScore() {
+  try {
+    localStorage.setItem("chailongmeo.bestScore", String(bestScore));
+  } catch (_) {}
+}
+
+function renderScoreHud() {
+  scoreEl.textContent = score;
+  if (bestScoreEl) bestScoreEl.textContent = bestScore;
+}
+
+function maybeUpdateBestScore() {
+  if (score > bestScore) {
+    bestScore = score;
+    saveBestScore();
+  }
+
+  renderScoreHud();
 }
 
 function randInt(a, b) {
@@ -340,8 +372,15 @@ function rectContains(rect, x, y) {
 }
 
 function isOnBrushZone(x, y) {
-  const r = brushZone.getBoundingClientRect();
-  return rectContains(r, x, y);
+  const catLayer = $("catLayer");
+  const r = catLayer.getBoundingClientRect();
+
+  const rx = (x - r.left) / r.width;
+  const ry = (y - r.top) / r.height;
+
+  // Generous cat-back hitbox. This is more stable across desktop/mobile
+  // than the old invisible #brushZone box.
+  return rx >= 0.10 && rx <= 0.82 && ry >= 0.14 && ry <= 0.92;
 }
 
 function handleBrushMovement(p, dt) {
@@ -390,7 +429,7 @@ function handleBrushMovement(p, dt) {
   if (brushProgress > getBrushNeeded()) {
     brushProgress = 0;
     score++;
-    scoreEl.textContent = score;
+    maybeUpdateBestScore();
 
     if (score >= nextStareAt) {
       setState(S.WARNING);
@@ -454,6 +493,7 @@ soundBtn.addEventListener("click", (e) => {
 });
 
 window.addEventListener("load", () => {
+  renderScoreHud();
   applyMute();
   moveComb(window.innerWidth * 0.58, window.innerHeight * 0.64);
 });
